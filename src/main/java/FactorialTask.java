@@ -2,23 +2,28 @@ import java.util.Arrays;
 import java.util.concurrent.RecursiveTask;
 
 public class FactorialTask extends RecursiveTask<Long> {
-    private int n;
     private long[] ints;
 
 
-
-    public FactorialTask(int n) {
-        this.n = n;
+    public FactorialTask(long[] a) {
+this.ints=a;
     }
 
     @Override
     protected Long compute() {
-        ints=new long[Math.abs(n)];
-        for (int i = 0; i < ints.length; i++) {
-            ints[i] = i + 1;
+        if(ints.length <= 2) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return Arrays.stream(ints).reduce((a, e) -> a * e).getAsLong();
         }
-        long sum = Arrays.stream(ints).parallel().reduce((a, e) -> a * e).getAsLong();
-        return sum;
+        FactorialTask task1 = new FactorialTask(Arrays.copyOfRange(ints, 0, ints.length/2));
+        FactorialTask task2 = new FactorialTask(Arrays.copyOfRange(ints, ints.length/2, ints.length));
+        task1.fork();
+        task2.fork();
+        return task1.join() * task2.join();
+    }
 
     }
-}
