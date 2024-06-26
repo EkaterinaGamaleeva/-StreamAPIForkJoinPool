@@ -12,11 +12,7 @@ this.ints=a;
     @Override
     protected Long compute() {
         if(ints.length <= 2) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+
             return Arrays.stream(ints).reduce((a, e) -> a * e).getAsLong();
         }
         FactorialTask task1 = new FactorialTask(Arrays.copyOfRange(ints, 0, ints.length/2));
